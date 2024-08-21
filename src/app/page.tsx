@@ -1,7 +1,13 @@
-export default function Home() {
+import React from 'react';
+import Layout from '../components/Layout';
+
+const App: React.FC = () => {
   return (
-    <div>
-      <h1>HOME ....</h1>
-    </div>
-  )
-}
+    <Layout>
+      <div>
+      </div>
+    </Layout>
+  );
+};
+
+export default App;
