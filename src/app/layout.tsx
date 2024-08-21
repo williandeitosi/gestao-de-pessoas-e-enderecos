@@ -15,7 +15,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} `}>
+        <div className="min-h-screen grid grid-rows-12 grid-cols-12">
+          <header className="bg-blue-500 col-span-12  flex items-center justify-center">
+            HEADER
+          </header>
+          <main className="row-span-10 col-span-4 bg-red-500">{children}</main>
+          <main className="row-span-10 col-span-4 bg-red-900">
+            apenas teste
+          </main>
+          <main className="row-span-10 col-span-4 bg-green-900">
+            apenas teste
+          </main>
+          <footer className="bg-blue-500 col-span-12 flex items-center justify-center">
+            FOOTER
+          </footer>
+        </div>
+      </body>
     </html>
   )
 }
