@@ -5,11 +5,10 @@ import Sidebar from '@/components/Sidebar'
 
 export default function PanelLayout() {
   return (
-    <div className=" max-h-screen grid grid-cols-16 grid-rows-11 ">
+    <div className=" max-h-screen grid grid-cols-16 grid-rows-11 bg-zinc-900 ">
       <Navbar />
       <Sidebar />
       <ContentPage />
-      <Footer />
     </div>
   )
 }

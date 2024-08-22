@@ -22,7 +22,7 @@ const sidebarItemBottom = {
 
 export default function Sidebar() {
   return (
-    <div className="flex flex-col bg-zinc-900 text-white row-start-2 row-end-11 col-span-2">
+    <div className="flex flex-col bg-zinc-900 text-white row-start-2 row-end-12 col-span-2">
       <nav className="flex-1 overflow-y-auto">
         <ul className="px-2 py-4">
           {sidebarItemsTop.map((item) => (
