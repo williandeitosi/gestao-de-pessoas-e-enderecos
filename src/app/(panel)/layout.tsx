@@ -1,13 +1,15 @@
-import Navbar from "@/components/Navbar"
-import Sidebar from "@/components/Sidebar"
+import ContentPage from '@/components/Content'
+import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
+import Sidebar from '@/components/Sidebar'
 
-export default function PanelLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function PanelLayout() {
   return (
-    <div className="grid grid-cols-16 grid-rows-12 ">
-      <Navbar/>
-      <Sidebar/>
+    <div className=" max-h-screen grid grid-cols-16 grid-rows-11 ">
+      <Navbar />
+      <Sidebar />
+      <ContentPage />
+      <Footer />
     </div>
   )
 }
