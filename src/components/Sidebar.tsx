@@ -8,14 +8,14 @@ import {
 import Link from 'next/link'
 
 const sidebarItemsTop = [
-  { name: 'Home', href: '/', icon: HomeIcon },
-  { name: 'Users', href: '/users', icon: UsersIcon },
-  { name: 'Locations', href: '/Locations', icon: MapPinIcon },
-  { name: 'Add User', href: '/add-user', icon: UserPlusIcon },
+  { name: 'Inicio', href: '/', icon: HomeIcon },
+  { name: 'Usuarios', href: '/users', icon: UsersIcon },
+  { name: 'Localizações', href: '/Locations', icon: MapPinIcon },
+  { name: 'Adicionar Usuario', href: '/add-user', icon: UserPlusIcon },
 ]
 
 const sidebarItemBottom = {
-  name: 'Config',
+  name: 'Configurações',
   href: '/config',
   icon: Cog6ToothIcon,
 }
