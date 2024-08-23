@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Search, Eye, Edit, Trash2, User } from 'lucide-react';
 import Avatar from '../assets/images/avatar.png';
 import { StaticImageData } from 'next/image';
@@ -108,8 +109,8 @@ function UserListContent() {
             {filteredUsers.map((user) => (
               <tr key={user.id} className="border-t border-zinc-600">
                 <td className="p-3 flex items-center space-x-2">
-                  <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full" />
-                  <span>{user.name}</span>
+                <Image src={user.avatar} alt={user.name} width={32} height={32} className="rounded-full" />
+                <span>{user.name}</span>
                 </td>
                 <td className="p-3">{user.email}</td>
                 <td className="p-3">{`${user.city}, ${user.state}`}</td>
