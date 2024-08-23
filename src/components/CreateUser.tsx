@@ -124,14 +124,23 @@ function CreateUser() {
                 />
               </div>
               <div>
-                <label htmlFor='date' className='block text-sm font-medium text-gray-300 mb-1'>Nascimento</label>
+                <label htmlFor='birth' className='block text-sm font-medium text-gray-300 mb-1'>Nascimento</label>
                 <input
                   type='date'
                   id='birth'
                   name='birth'
                   value={user.birth}
                   onChange={handleChange}
-                  className='w-full px-3 py-2 bg-zinc-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  className='
+                  w-full px-3 py-2 
+                bg-zinc-600 text-white 
+                  rounded-md focus:outline-none 
+                  focus:ring-2 focus:ring-blue-500
+                hover:bg-zinc-500 transition-colors 
+                  appearance-none 
+                placeholder-gray-400 
+                  [&::-webkit-calendar-picker-indicator]:cursor-pointer 
+                  [&::-webkit-calendar-picker-indicator]:invert'
                   required
                 />
               </div>
@@ -141,43 +150,45 @@ function CreateUser() {
 
           <div className='col-span-2 sm:col-span-1 space-y-4'>
             <h2 className='text-xl font-semibold text-white mb-2'>Endereços</h2>
-            {user.addresses.map((address, index) => (
-              <div key={index} className='bg-zinc-600 p-4 rounded-md'>
-                <div className='flex justify-between items-center mb-2'>
-                  <h3 className='text-lg font-medium text-white'>Endereço {index + 1}</h3>
-                  {index > 0 && (
-                    <button type="button" onClick={() => removeAddress(index)} className='text-red-400 hover:text-red-300'>
-                      <Trash2 className='h-5 w-5' />
-                    </button>
-                  )}
+            <div className='addresses-container max-h-80 overflow-y-auto space-y-4'>
+              {user.addresses.map((address, index) => (
+                <div key={index} className='bg-zinc-600 p-4 rounded-md'>
+                  <div className='flex justify-between items-center mb-2'>
+                    <h3 className='text-lg font-medium text-white'>Endereço {index + 1}</h3>
+                    {index > 0 && (
+                      <button type="button" onClick={() => removeAddress(index)} className='text-red-400 hover:text-red-300'>
+                        <Trash2 className='h-5 w-5' />
+                      </button>
+                    )}
+                  </div>
+                  <div className='grid grid-cols-2 gap-2'>
+                    {[
+                      { name: 'street', label: 'Rua', type: 'text' },
+                      { name: 'number', label: 'Número', type: 'number' },
+                      { name: 'neighborhood', label: 'Bairro', type: 'text' },
+                      { name: 'city', label: 'Cidade', type: 'text' },
+                      { name: 'state', label: 'Estado', type: 'text' },
+                      { name: 'cep', label: 'CEP', type: 'number' },
+                    ].map((field) => (
+                      <div key={field.name}>
+                        <label htmlFor={`${field.name}-${index}`} className='block text-sm font-medium text-gray-300 mb-1'>
+                          {field.label}
+                        </label>
+                        <input
+                          type={field.type}
+                          id={`${field.name}-${index}`}
+                          name={field.name}
+                          value={address[field.name as keyof Address]}
+                          onChange={(e) => handleAddressChange(index, e)}
+                          className='w-full px-3 py-2 bg-zinc-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"'
+                          required
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className='grid grid-cols-2 gap-2'>
-                  {[
-                    { name: 'street', label: 'Rua', type: 'text' },
-                    { name: 'number', label: 'Número', type: 'number' },
-                    { name: 'neighborhood', label: 'Bairro', type: 'text' },
-                    { name: 'city', label: 'Cidade', type: 'text' },
-                    { name: 'state', label: 'Estado', type: 'text' },
-                    { name: 'cep', label: 'CEP', type: 'number' },
-                  ].map((field) => (
-                    <div key={field.name}>
-                      <label htmlFor={`${field.name}-${index}`} className='block text-sm font-medium text-gray-300 mb-1'>
-                        {field.label}
-                      </label>
-                      <input
-                        type={field.type}
-                        id={`${field.name}-${index}`}
-                        name={field.name}
-                        value={address[field.name as keyof Address]}
-                        onChange={(e) => handleAddressChange(index, e)}
-                        className='w-full px-3 py-2 bg-zinc-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"    '
-                        required
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
             <button
               type='button'
               onClick={addAddress}
@@ -186,6 +197,7 @@ function CreateUser() {
               <Plus className='h-5 w-5 mr-2' /> Adicionar Endereço
             </button>
           </div>
+
         </div>
 
         <div className='flex justify-end'>
