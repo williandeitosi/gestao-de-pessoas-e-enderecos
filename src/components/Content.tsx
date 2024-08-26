@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, Eye, Edit, Trash2, User } from "lucide-react";
+import { Search, Eye, Edit, Trash2 } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
 import { StaticImageData } from "next/image";
 
@@ -10,144 +10,41 @@ interface UserType {
   id: number;
   name: string;
   email: string;
-  city: string;
-  state: string;
-  Number: string;
-  Bairro: string;
-  Cep: string;
-  avatar: StaticImageData;
+  sexo?: string; // Pode adicionar os campos conforme a resposta da API
+  pfp?: string;
+  cpf?: string;
+  birth?: string;
+  city?: string; // Campos podem ser diferentes conforme a API
+  state?: string;
+  Number?: string;
+  Bairro?: string;
+  Cep?: string;
+  avatar?: StaticImageData;
 }
 
-const mockUsers: UserType[] = [
-  {
-    id: 1,
-    name: "Joao Silva",
-    email: "joaosilva@example.com",
-    city: "Sao Paulo",
-    state: "SP",
-    Number: "605",
-    Bairro: "Sapequeira",
-    Cep: "89600-000",
-    avatar: Avatar,
-  },
-  {
-    id: 2,
-    name: "Maria Oliveira",
-    email: "mariaoliveira@example.com",
-    city: "Rio de Janeiro",
-    state: "RJ",
-    Number: "123",
-    Bairro: "Copacabana",
-    Cep: "22000-000",
-    avatar: Avatar,
-  },
-  {
-    id: 3,
-    name: "Pedro Santos",
-    email: "pedrosantos@example.com",
-    city: "Belo Horizonte",
-    state: "MG",
-    Number: "456",
-    Bairro: "Savassi",
-    Cep: "30150-000",
-    avatar: Avatar,
-  },
-  {
-    id: 4,
-    name: "Ana Costa",
-    email: "anacosta@example.com",
-    city: "Porto Alegre",
-    state: "RS",
-    Number: "789",
-    Bairro: "Centro",
-    Cep: "90000-000",
-    avatar: Avatar,
-  },
-  {
-    id: 5,
-    name: "Carlos Pereira",
-    email: "carlospereira@example.com",
-    city: "Curitiba",
-    state: "PR",
-    Number: "101",
-    Bairro: "Batel",
-    Cep: "80230-000",
-    avatar: Avatar,
-  },
-  {
-    id: 6,
-    name: "Fernanda Lima",
-    email: "fernandalima@example.com",
-    city: "Salvador",
-    state: "BA",
-    Number: "202",
-    Bairro: "Barra",
-    Cep: "40130-000",
-    avatar: Avatar,
-  },
-  {
-    id: 7,
-    name: "Roberto Almeida",
-    email: "robertoalmeida@example.com",
-    city: "Fortaleza",
-    state: "CE",
-    Number: "303",
-    Bairro: "Meireles",
-    Cep: "60160-000",
-    avatar: Avatar,
-  },
-  {
-    id: 8,
-    name: "Juliana Souza",
-    email: "julianasouza@example.com",
-    city: "Recife",
-    state: "PE",
-    Number: "404",
-    Bairro: "Boa Viagem",
-    Cep: "51010-000",
-    avatar: Avatar,
-  },
-  {
-    id: 9,
-    name: "Rafael Martins",
-    email: "rafaelmartins@example.com",
-    city: "Brasilia",
-    state: "DF",
-    Number: "505",
-    Bairro: "Asa Norte",
-    Cep: "70800-000",
-    avatar: Avatar,
-  },
-  {
-    id: 10,
-    name: "Tatiane Rodrigues",
-    email: "tatianerodrigues@example.com",
-    city: "Manaus",
-    state: "AM",
-    Number: "606",
-    Bairro: "Centro",
-    Cep: "69000-000",
-    avatar: Avatar,
-  },
-  {
-    id: 11,
-    name: "Gustavo Lima",
-    email: "gustavolima@example.com",
-    city: "Belém",
-    state: "PA",
-    Number: "707",
-    Bairro: "Batista Campos",
-    Cep: "66000-000",
-    avatar: Avatar,
-  },
-];
-
 function UserListContent() {
-  const [users, setUsers] = useState<UserType[]>(mockUsers);
-  const [filteredUsers, setFilteredUsers] = useState<UserType[]>(mockUsers);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const response = await fetch("http://localhost:3000/clients", {
+          method: "GET",
+        });
+        const data = await response.json();
+        setUsers(data);
+        setFilteredUsers(data);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    }
+
+    fetchClients();
+  }, []);
 
   useEffect(() => {
     setFilteredUsers(
@@ -168,7 +65,6 @@ function UserListContent() {
   };
 
   const handleEdit = (userId: number) => {
-    // Implementar lógica ainda
     console.log("Falta implementar lógica");
   };
 
@@ -179,13 +75,13 @@ function UserListContent() {
 
   return (
     <div className="w-full h-full overflow-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Lista de Usuarios</h1>
+      <h1 className="text-3xl font-bold mb-6">Lista de Usuários</h1>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          "Usuarios Ativos (30 dias)",
-          "Total de usuarios",
-          "Novos Usuarios (10 dias)",
+          "Usuários Ativos (30 dias)",
+          "Total de usuários",
+          "Novos Usuários (10 dias)",
         ].map((title, index) => (
           <div
             key={index}
@@ -230,7 +126,7 @@ function UserListContent() {
               <tr key={user.id} className="border-t border-zinc-600">
                 <td className="p-3 flex items-center space-x-2">
                   <Image
-                    src={user.avatar}
+                    src={user.avatar || Avatar}
                     alt={user.name}
                     width={32}
                     height={32}
@@ -239,7 +135,7 @@ function UserListContent() {
                   <span>{user.name}</span>
                 </td>
                 <td className="p-3">{user.email}</td>
-                <td className="p-3">{`${user.city}, ${user.state}`}</td>
+                <td className="p-3">{`${user.city || ""}, ${user.state || ""}`}</td>
                 <td className="p-3">
                   <div className="flex space-x-2">
                     <button
@@ -279,10 +175,10 @@ function UserListContent() {
               <strong>Email:</strong> {selectedUser.email}
             </p>
             <p>
-              <strong>Cidade:</strong> {selectedUser.city}
+              <strong>Cidade:</strong> {selectedUser.city || "N/A"}
             </p>
             <p>
-              <strong>Estado:</strong> {selectedUser.state}
+              <strong>Estado:</strong> {selectedUser.state || "N/A"}
             </p>
             <button
               onClick={() => setIsModalOpen(false)}
