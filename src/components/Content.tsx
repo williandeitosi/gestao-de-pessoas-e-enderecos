@@ -6,20 +6,26 @@ import { Search, Eye, Edit, Trash2 } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
 import { StaticImageData } from "next/image";
 
+interface AddressType {
+  id: number;
+  cep: number;
+  city: string;
+  street: string;
+  state: string;
+  number: number;
+  neighboorhood: string;
+  clientsId?: number;
+}
+
 interface UserType {
   id: number;
   name: string;
   email: string;
-  sexo?: string; // Pode adicionar os campos conforme a resposta da API
+  sexo?: string;
   pfp?: string;
   cpf?: string;
   birth?: string;
-  city?: string; // Campos podem ser diferentes conforme a API
-  state?: string;
-  Number?: string;
-  Bairro?: string;
-  Cep?: string;
-  avatar?: StaticImageData;
+  Address: AddressType[];
 }
 
 function UserListContent() {
@@ -36,6 +42,7 @@ function UserListContent() {
           method: "GET",
         });
         const data = await response.json();
+        console.log(data);
         setUsers(data);
         setFilteredUsers(data);
       } catch (error) {
@@ -126,7 +133,7 @@ function UserListContent() {
               <tr key={user.id} className="border-t border-zinc-600">
                 <td className="p-3 flex items-center space-x-2">
                   <Image
-                    src={user.avatar || Avatar}
+                    src={Avatar}
                     alt={user.name}
                     width={32}
                     height={32}
@@ -135,7 +142,16 @@ function UserListContent() {
                   <span>{user.name}</span>
                 </td>
                 <td className="p-3">{user.email}</td>
-                <td className="p-3">{`${user.city || ""}, ${user.state || ""}`}</td>
+                <td className="p-3">
+                  {user.Address.length > 0
+                    ? user.Address.map((address, index) => (
+                        <div
+                          key={index}
+                        >{`${address.city}, ${address.state}`}</div>
+                      ))
+                    : "Endereço não vinculado"}
+                </td>
+
                 <td className="p-3">
                   <div className="flex space-x-2">
                     <button
@@ -174,11 +190,9 @@ function UserListContent() {
             <p>
               <strong>Email:</strong> {selectedUser.email}
             </p>
+            <p>{/* <strong>Cidade:</strong> {selectedUser.city || "N/A"} */}</p>
             <p>
-              <strong>Cidade:</strong> {selectedUser.city || "N/A"}
-            </p>
-            <p>
-              <strong>Estado:</strong> {selectedUser.state || "N/A"}
+              {/* <strong>Estado:</strong> {selectedUser.state || "N/A"} */}
             </p>
             <button
               onClick={() => setIsModalOpen(false)}
