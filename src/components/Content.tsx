@@ -144,11 +144,7 @@ function UserListContent() {
                 <td className="p-3">{user.email}</td>
                 <td className="p-3">
                   {user.Address.length > 0
-                    ? user.Address.map((address, index) => (
-                        <div
-                          key={index}
-                        >{`${address.city}, ${address.state}`}</div>
-                      ))
+                    ? `${user.Address[0].city}, ${user.Address[0].state}`
                     : "Endereço não vinculado"}
                 </td>
 
@@ -181,23 +177,22 @@ function UserListContent() {
       </div>
       {isModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-zinc-800 p-8 rounded-lg max-w-2xl w-full relative">
+          <div className="bg-zinc-800 p-8 rounded-lg max-w-2xl w-full relative max-h-[90vh] flex flex-col">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 left-4 flex items-center text-blue-400 hover:text-blue-300"
             >
-              <ArrowLeft className="h-6 w-6 mr-2" />
-              <span>Voltar</span>
+              <ArrowLeft className="h-8 w-8 mr-2" />
             </button>
             <span className="absolute top-4 right-4 text-xs text-gray-400">
               ID: {selectedUser.id}
             </span>
-            <div className="mt-12">
+            <div className="mt-6">
               <h2 className="text-2xl font-bold mb-6 text-center">
                 Detalhes do usuário
               </h2>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <Image
                   src={Avatar}
@@ -222,31 +217,36 @@ function UserListContent() {
                 <InfoItem label="Sexo" value={selectedUser.sexo || "N/A"} />
               </div>
             </div>
-            <div className="mt-6">
+            <div className="flex-grow overflow-hidden ">
               <h3 className="text-xl font-semibold mb-4">Endereços</h3>
-              {selectedUser.Address.length > 0 ? (
-                selectedUser.Address.map((address, index) => (
-                  <div key={index} className="bg-zinc-700 p-4 rounded-lg mb-4">
-                    <p>
-                      <strong>Cep: </strong> {address.cep}
-                    </p>
-                    <p>
-                      <strong>Rua: </strong> {address.street}, {address.number}
-                    </p>
-                    <p>
-                      <strong>Bairro: </strong> {address.neighboorhood}
-                    </p>
-                    <p>
-                      <strong>Cidade: </strong> {address.city}
-                    </p>
-                    <p>
-                      <strong>Estado: </strong> {address.state}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-400">Nenhum Endereço Cadastrado</p>
-              )}
+              <div className="addresses-container overflow-y-auto max-h-[40vh] pr-2">
+                {selectedUser.Address.length > 0 ? (
+                  selectedUser.Address.map((address, index) => (
+                    <div
+                      key={index}
+                      className="bg-zinc-700 p-4 rounded-lg mb-4"
+                    >
+                      <p>
+                        <strong>CEP:</strong> {address.cep}
+                      </p>
+                      <p>
+                        <strong>Rua:</strong> {address.street}, {address.number}
+                      </p>
+                      <p>
+                        <strong>Bairro:</strong> {address.neighboorhood}
+                      </p>
+                      <p>
+                        <strong>Cidade:</strong> {address.city}
+                      </p>
+                      <p>
+                        <strong>Estado:</strong> {address.state}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400">Nenhum Endereço Cadastrado</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
