@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, Eye, Edit, Trash2 } from "lucide-react";
+import { Search, Eye, Edit, Trash2, ArrowLeft } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
 import { StaticImageData } from "next/image";
 
@@ -179,30 +179,87 @@ function UserListContent() {
           </tbody>
         </table>
       </div>
-
       {isModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-zinc-800 p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Detalhes do Usuário</h2>
-            <p>
-              <strong>Nome:</strong> {selectedUser.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedUser.email}
-            </p>
-            <p>{/* <strong>Cidade:</strong> {selectedUser.city || "N/A"} */}</p>
-            <p>
-              {/* <strong>Estado:</strong> {selectedUser.state || "N/A"} */}
-            </p>
+          <div className="bg-zinc-800 p-8 rounded-lg max-w-2xl w-full relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="absolute top-4 left-4 flex items-center text-blue-400 hover:text-blue-300"
             >
-              Fechar
+              <ArrowLeft className="h-6 w-6 mr-2" />
+              <span>Voltar</span>
             </button>
+            <span className="absolute top-4 right-4 text-xs text-gray-400">
+              ID: {selectedUser.id}
+            </span>
+            <div className="mt-12">
+              <h2 className="text-2xl font-bold mb-6 text-center">
+                Detalhes do usuário
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <Image
+                  src={Avatar}
+                  alt={selectedUser.name}
+                  width={100}
+                  height={100}
+                  className="rounded-full mx-auto mb-4"
+                />
+                <p className="text-center text-xl font-semibold mb-2">
+                  {selectedUser.name}
+                </p>
+                <p className="text-center text-gray-400 mb-4">
+                  {selectedUser.email}
+                </p>
+              </div>
+              <div>
+                <InfoItem label="CPF" value={selectedUser.cpf || "N/A"} />
+                <InfoItem
+                  label="Data de nascimento"
+                  value={selectedUser.birth || "N/A"}
+                />
+                <InfoItem label="Sexo" value={selectedUser.sexo || "N/A"} />
+              </div>
+            </div>
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold mb-4">Endereços</h3>
+              {selectedUser.Address.length > 0 ? (
+                selectedUser.Address.map((address, index) => (
+                  <div key={index} className="bg-zinc-700 p-4 rounded-lg mb-4">
+                    <p>
+                      <strong>Cep: </strong> {address.cep}
+                    </p>
+                    <p>
+                      <strong>Rua: </strong> {address.street}, {address.number}
+                    </p>
+                    <p>
+                      <strong>Bairro: </strong> {address.neighboorhood}
+                    </p>
+                    <p>
+                      <strong>Cidade: </strong> {address.city}
+                    </p>
+                    <p>
+                      <strong>Estado: </strong> {address.state}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">Nenhum Endereço Cadastrado</p>
+              )}
+            </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="mb-4">
+      <p className="text-gray-400">{label}</p>
+      <p className="font-semibold">{value}</p>
     </div>
   );
 }
