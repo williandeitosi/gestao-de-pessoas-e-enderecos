@@ -67,8 +67,29 @@ function UserListContent() {
     setSearchTerm(e.target.value);
   };
 
-  const handleDelete = (userId: number) => {
-    setUsers(users.filter((user) => user.id !== userId));
+  const handleDelete = async (userId: number) => {
+    const confirmDelete = window.confirm(
+      "Tem certeza de que deseja excluir este usuário?"
+    );
+
+    if (confirmDelete) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/clients/${userId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (response.ok) {
+          setUsers(users.filter((user) => user.id !== userId));
+        } else {
+          console.error("Erro ao excluir usuário:", await response.text());
+        }
+      } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
+      }
+    }
   };
 
   const handleEdit = (userId: number) => {
