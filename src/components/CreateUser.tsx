@@ -22,7 +22,38 @@ interface UserType {
   cpf: string;
   birth: string;
   avatar: StaticImageData;
+  gender: string;
 }
+
+const estadosBR = [
+  { value: "AC", label: "Acre" },
+  { value: "AL", label: "Alagoas" },
+  { value: "AP", label: "Amapá" },
+  { value: "AM", label: "Amazonas" },
+  { value: "BA", label: "Bahia" },
+  { value: "CE", label: "Ceará" },
+  { value: "DF", label: "Distrito Federal" },
+  { value: "ES", label: "Espírito Santo" },
+  { value: "GO", label: "Goiás" },
+  { value: "MA", label: "Maranhão" },
+  { value: "MT", label: "Mato Grosso" },
+  { value: "MS", label: "Mato Grosso do Sul" },
+  { value: "MG", label: "Minas Gerais" },
+  { value: "PA", label: "Pará" },
+  { value: "PB", label: "Paraíba" },
+  { value: "PR", label: "Paraná" },
+  { value: "PE", label: "Pernambuco" },
+  { value: "PI", label: "Piauí" },
+  { value: "RJ", label: "Rio de Janeiro" },
+  { value: "RN", label: "Rio Grande do Norte" },
+  { value: "RS", label: "Rio Grande do Sul" },
+  { value: "RO", label: "Rondônia" },
+  { value: "RR", label: "Roraima" },
+  { value: "SC", label: "Santa Catarina" },
+  { value: "SP", label: "São Paulo" },
+  { value: "SE", label: "Sergipe" },
+  { value: "TO", label: "Tocantins" },
+];
 
 function CreateUser() {
   const [user, setUser] = useState<UserType>({
@@ -41,21 +72,48 @@ function CreateUser() {
       },
     ],
     avatar: Avatar,
+    gender: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
+    let formattedValue = value;
+
+    if (name === "cpf") {
+      formattedValue = value.replace(/\D/g, "").slice(0, 11);
+      if (formattedValue.length > 3) {
+        formattedValue = `${formattedValue.slice(0, 3)}.${formattedValue.slice(3)}`;
+      }
+      if (formattedValue.length > 7) {
+        formattedValue = `${formattedValue.slice(0, 7)}.${formattedValue.slice(7)}`;
+      }
+      if (formattedValue.length > 11) {
+        formattedValue = `${formattedValue.slice(0, 11)}-${formattedValue.slice(11, 13)}`;
+      }
+    }
+
+    setUser((prevUser) => ({ ...prevUser, [name]: formattedValue }));
   };
 
   const handleAddressChange = (
     index: number,
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    let formattedValue = value;
+
+    if (name === "cep") {
+      formattedValue = value.replace(/\D/g, "").slice(0, 8);
+      if (formattedValue.length > 5) {
+        formattedValue = `${formattedValue.slice(0, 5)}-${formattedValue.slice(5)}`;
+      }
+    }
+
     const newAddresses = user.addresses.map((address, i) => {
       if (i === index) {
-        return { ...address, [name]: value };
+        return { ...address, [name]: formattedValue };
       }
       return address;
     });
@@ -140,16 +198,17 @@ function CreateUser() {
                   htmlFor="cpf"
                   className="block text-sm font-medium text-gray-300 mb-1"
                 >
-                  Cpf
+                  CPF
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="cpf"
                   name="cpf"
                   value={user.cpf}
                   onChange={handleChange}
-                  className='w-full px-3 py-2 bg-zinc-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"'
+                  className="w-full px-3 py-2 bg-zinc-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
+                  maxLength={14}
                 />
               </div>
               <div>
@@ -169,38 +228,60 @@ function CreateUser() {
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="birth"
-                  className="block text-sm font-medium text-gray-300 mb-1"
-                >
-                  Nascimento
-                </label>
-                <input
-                  type="date"
-                  id="birth"
-                  name="birth"
-                  value={user.birth}
-                  onChange={handleChange}
-                  className="
-                  w-full px-3 py-2 
-                bg-zinc-600 text-white 
-                  rounded-md focus:outline-none 
-                  focus:ring-2 focus:ring-blue-500
-                hover:bg-zinc-500 transition-colors 
-                  appearance-none 
-                placeholder-gray-400 
-                  [&::-webkit-calendar-picker-indicator]:cursor-pointer 
-                  [&::-webkit-calendar-picker-indicator]:invert"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="gender"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Sexo
+                  </label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={user.gender}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 bg-zinc-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Selecione</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="birth"
+                    className="block text-sm font-medium text-gray-300 mb-1"
+                  >
+                    Nascimento
+                  </label>
+                  <input
+                    type="date"
+                    id="birth"
+                    name="birth"
+                    value={user.birth}
+                    onChange={handleChange}
+                    className="
+                    w-full px-3 py-2 
+                    bg-zinc-600 text-white 
+                    rounded-md focus:outline-none 
+                    focus:ring-2 focus:ring-blue-500
+                    hover:bg-zinc-500 transition-colors 
+                    appearance-none 
+                    placeholder-gray-400 
+                    [&::-webkit-calendar-picker-indicator]:cursor-pointer 
+                    [&::-webkit-calendar-picker-indicator]:invert"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="col-span-2 sm:col-span-1 space-y-4">
+          <div className="col-span-2 sm:col-span-1 space-y-3">
             <h2 className="text-xl font-semibold text-white mb-2">Endereços</h2>
-            <div className="addresses-container max-h-80 overflow-y-auto space-y-4">
+            <div className="addresses-container max-h-80 overflow-y-auto space-y-6">
               {user.addresses.map((address, index) => (
                 <div key={index} className="bg-zinc-600 p-4 rounded-md">
                   <div className="flex justify-between items-center mb-2">
@@ -223,8 +304,7 @@ function CreateUser() {
                       { name: "number", label: "Número", type: "number" },
                       { name: "neighborhood", label: "Bairro", type: "text" },
                       { name: "city", label: "Cidade", type: "text" },
-                      { name: "state", label: "Estado", type: "text" },
-                      { name: "cep", label: "CEP", type: "number" },
+                      { name: "cep", label: "CEP", type: "text" },
                     ].map((field) => (
                       <div key={field.name}>
                         <label
@@ -241,9 +321,32 @@ function CreateUser() {
                           onChange={(e) => handleAddressChange(index, e)}
                           className='w-full px-3 py-2 bg-zinc-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"'
                           required
+                          maxLength={field.name === "cep" ? 9 : undefined}
                         />
                       </div>
                     ))}
+                    <div>
+                      <label
+                        htmlFor={`state-${index}`}
+                        className="block text-sm font-medium text-gray-300 mb-1"
+                      >
+                        Estado
+                      </label>
+                      <select
+                        id={`state-${index}`}
+                        name="state"
+                        value={address.state}
+                        onChange={(e) => handleAddressChange(index, e)}
+                        className="addresses-container w-full px-3 py-2 bg-zinc-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      >
+                        {estadosBR.map((estado) => (
+                          <option key={estado.value} value={estado.value}>
+                            {estado.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               ))}
