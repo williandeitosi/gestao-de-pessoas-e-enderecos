@@ -97,7 +97,7 @@ function CreateUser() {
     setUser((prevUser) => ({ ...prevUser, [name]: formattedValue }));
   };
 
-  const handleAddressChange = (
+  const handleAddressChange = async (
     index: number,
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -108,6 +108,26 @@ function CreateUser() {
       formattedValue = value.replace(/\D/g, "").slice(0, 8);
       if (formattedValue.length > 5) {
         formattedValue = `${formattedValue.slice(0, 5)}-${formattedValue.slice(5)}`;
+      }
+
+      if (formattedValue.length === 9) {
+        const addressData = await fetchAddressData(
+          formattedValue.replace("-", "")
+        );
+        if (addressData) {
+          const newAddresses = user.addresses.map((address, i) => {
+            if (i === index) {
+              return {
+                ...address,
+                ...addressData,
+                cep: formattedValue,
+              };
+            }
+            return address;
+          });
+          setUser((prevUser) => ({ ...prevUser, addresses: newAddresses }));
+          return;
+        }
       }
     }
 
@@ -135,6 +155,24 @@ function CreateUser() {
         },
       ],
     }));
+  };
+
+  const fetchAddressData = async (cep: string) => {
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (!data.erro) {
+        return {
+          street: data.logradouro,
+          neighborhood: data.bairro,
+          city: data.localidade,
+          state: data.uf,
+        };
+      }
+    } catch (error) {
+      console.error("Error on fetchaddres", error);
+    }
+    return null;
   };
 
   const removeAddress = (index: number) => {
