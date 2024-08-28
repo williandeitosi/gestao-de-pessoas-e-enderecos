@@ -101,6 +101,20 @@ function UserListContent() {
     setIsModalOpen(true);
   };
 
+  function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+
+  function formatCPF(cpf: string): string {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  }
+
   return (
     <div className="w-full h-full overflow-auto p-6 text-white">
       <h1 className="text-3xl font-bold mb-6">Lista de Usuários</h1>
@@ -230,10 +244,15 @@ function UserListContent() {
                 </p>
               </div>
               <div>
-                <InfoItem label="CPF" value={selectedUser.cpf || "N/A"} />
+                <InfoItem
+                  label="CPF"
+                  value={selectedUser.cpf ? formatCPF(selectedUser.cpf) : "N/A"}
+                />
                 <InfoItem
                   label="Data de nascimento"
-                  value={selectedUser.birth || "N/A"}
+                  value={
+                    selectedUser.birth ? formatDate(selectedUser.birth) : "N/A"
+                  }
                 />
                 <InfoItem label="Sexo" value={selectedUser.sexo || "N/A"} />
               </div>
