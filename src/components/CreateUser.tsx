@@ -182,9 +182,60 @@ function CreateUser() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("New user:", user);
+
+    try {
+      // Criar o usuário
+      const userResponse = await fetch(`http://localhost:3000/clients`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          sexo: user.gender,
+          pfp: "default.png",
+          cpf: user.cpf.replace(/\D/g, ""),
+          birth: user.birth,
+        }),
+      });
+
+      if (!userResponse.ok) {
+        throw new Error("failed to create user");
+      }
+
+      const userData = await userResponse.json();
+      const userId = userData.id;
+
+      // Criar os endereços
+      for (const address of user.addresses) {
+        const addressResponse = await fetch(`http://localhost:3000/addresses`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cep: parseInt(address.cep),
+            city: address.city,
+            street: address.street,
+            state: address.state,
+            number: parseInt(address.number),
+            neighboorhood: address.neighborhood,
+            clientsId: parseInt(userId),
+          }),
+        });
+
+        if (!addressResponse.ok) {
+          throw new Error(`failed to create address: ${address.street}`);
+        }
+      }
+
+      console.log("User and addresses created successfully");
+    } catch (error) {
+      console.error("error creating user and addresses", error);
+    }
   };
 
   return (
@@ -283,8 +334,8 @@ function CreateUser() {
                     required
                   >
                     <option value="">Selecione</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
                   </select>
                 </div>
                 <div>
