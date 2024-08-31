@@ -40,6 +40,7 @@ function UserListContent() {
       try {
         const response = await fetch("http://localhost:3000/clients", {
           method: "GET",
+          credentials: "include",
         });
         const data = await response.json();
         console.log(data);
@@ -78,6 +79,7 @@ function UserListContent() {
           `http://localhost:3000/clients/${userId}`,
           {
             method: "DELETE",
+            credentials: "include",
           }
         );
 

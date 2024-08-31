@@ -192,6 +192,7 @@ function CreateUser() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           name: user.name,
           email: user.email,
