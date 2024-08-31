@@ -92,74 +92,24 @@ const CPFConsultationPage: React.FC = () => {
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulating API call
-    setTimeout(() => {
-      setConsultationResult({
-        pessoal: {
-          code: 200,
-          paginado: false,
-          records: [
-            {
-              cnsDefinitivo: "700007952731100",
-              cnsProvisorio: ["203426536300002"],
-              nome: "GILBERTO SILVA CASSIMIRO",
-              cpf: "35002284884",
-              dataNascimento: "1975-11-10",
-              sexo: "M",
-              nomeMae: "MARIA HELENA DA SILVA",
-              nomePai: "JOSE ROBERTO CASSIMIRO",
-              grauQualidade: 84,
-              ativo: true,
-              obito: false,
-              partoGemelar: false,
-              vip: false,
-              racaCor: "03",
-              telefone: [
-                {
-                  ddi: "55",
-                  ddd: "17",
-                  numero: "996020203",
-                  tipo: 1,
-                },
-              ],
-              nacionalidade: {
-                nacionalidade: 1,
-                municipioNascimento: "320305",
-                paisNascimento: "1",
-              },
-              endereco: {
-                tipoEndereco: 1,
-                logradouro: "FAZENDA SANTA IZABEL",
-                numero: "S/N",
-                complemento: "CASA 04",
-                bairro: "ZONA RURAL",
-                municipio: "352044",
-                siglaUf: "SP",
-                pais: "1",
-                cep: "15385000",
-              },
-            },
-          ],
-        },
-        calendario: {
-          code: 200,
-          paginado: false,
-          record: {
-            cns: "700007952731100",
-            cpf: "35002284884",
-            indigena: false,
-            calendario: [],
-            outrasImunizacoes: {
-              imunobiologicos: [],
-            },
-            imunizacoesCampanha: {
-              imunobiologicos: [],
-            },
-          },
-        },
+
+    try {
+      const response = await fetch(`Sua api de consulta aqui`, {
+        mode: "no-cors",
       });
+
+      if (!response.ok) {
+        throw new Error("Erro na consulta. Verifique o CPF e tente novamente.");
+      }
+
+      const data: ConsultationResult = await response.json();
+      setConsultationResult(data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao buscar os dados. Tente novamente.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const formatCPF = (value: string): string => {
