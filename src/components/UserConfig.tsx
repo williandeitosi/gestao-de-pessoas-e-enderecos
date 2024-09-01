@@ -1,23 +1,40 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
 import Image from "next/image";
-
-type Sexo = "Masculino" | "Feminino" | "Outro";
+import { fetchUserData, User, Sexo } from "../utils/fetchUserData"; // Importando o tipo Sexo
 
 export default function Component() {
-  const [name, setName] = useState("João Silva");
-  const [email, setEmail] = useState("joao.silva@example.com");
-  const [pass, setPass] = useState("********");
-  const [sexo, setSexo] = useState<Sexo>("Masculino");
-  const creationDate = "01/01/2023";
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [isEditing, setIsEditing] = useState({
     email: false,
     pass: false,
     sexo: false,
   });
+
+  useEffect(() => {
+    async function getUserData() {
+      try {
+        const userData = await fetchUserData();
+        setUser(userData);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    }
+
+    getUserData();
+  }, []);
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  if (!user) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="bg-zinc-800 p-4 rounded-md row-start-2 row-end-12 col-start-3 col-span-full flex justify-center items-center">
@@ -32,14 +49,14 @@ export default function Component() {
               alt="Profile"
               className="w-32 h-32 bg-zinc-600 bg-opacity-10 rounded-full mb-4"
             />
-            <h2 className="text-xl font-bold text-blue-500">{name}</h2>
+            <h2 className="text-xl font-bold text-blue-500">{user.name}</h2>
           </div>
         </div>
 
         <div className="bg-zinc-700 bg-opacity-85 rounded-lg p-6 space-y-8">
           <div className="flex items-center justify-between">
             <label className="text-zinc-400 w-1/3">Nome Completo:</label>
-            <p className="text-white w-2/3">{name}</p>
+            <p className="text-white w-2/3">{user.name}</p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -48,12 +65,16 @@ export default function Component() {
               {isEditing.email ? (
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={user.email}
+                  onChange={(e) =>
+                    setUser(
+                      (prev) => prev && { ...prev, email: e.target.value }
+                    )
+                  }
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 />
               ) : (
-                <p className="text-white flex-grow">{email}</p>
+                <p className="text-white flex-grow">{user.email}</p>
               )}
               <button
                 onClick={() =>
@@ -72,12 +93,14 @@ export default function Component() {
               {isEditing.pass ? (
                 <input
                   type="password"
-                  value={pass}
-                  onChange={(e) => setPass(e.target.value)}
+                  value={user.pass}
+                  onChange={(e) =>
+                    setUser((prev) => prev && { ...prev, pass: e.target.value })
+                  }
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 />
               ) : (
-                <p className="text-white flex-grow">{pass}</p>
+                <p className="text-white flex-grow">********</p>
               )}
               <button
                 onClick={() =>
@@ -95,15 +118,20 @@ export default function Component() {
             <div className="flex items-center space-x-2 w-2/3">
               {isEditing.sexo ? (
                 <select
-                  value={sexo}
-                  onChange={(e) => setSexo(e.target.value as Sexo)}
+                  value={user.sexo}
+                  onChange={(e) =>
+                    setUser(
+                      (prev) =>
+                        prev && { ...prev, sexo: e.target.value as Sexo }
+                    )
+                  }
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 >
                   <option value="Masculino">Masculino</option>
                   <option value="Feminino">Feminino</option>
                 </select>
               ) : (
-                <p className="text-white flex-grow">{sexo}</p>
+                <p className="text-white flex-grow">{user.sexo}</p>
               )}
               <button
                 onClick={() =>
@@ -120,7 +148,9 @@ export default function Component() {
             <label className="text-zinc-400 w-1/3">
               Data de Criação da Conta:
             </label>
-            <p className="text-white w-2/3">{creationDate}</p>
+            <p className="text-white w-2/3">
+              {new Date(user.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       </div>
