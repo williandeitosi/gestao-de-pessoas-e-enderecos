@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Search, Eye, Edit, Trash2, ArrowLeft } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
-import { StaticImageData } from "next/image";
 
 interface AddressType {
   id: number;
@@ -113,6 +112,10 @@ function UserListContent() {
     });
   }
 
+  const handleAddUser = () => {
+    window.location.href = "http://localhost:8080/create-user";
+  };
+
   function formatCPF(cpf: string): string {
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   }
@@ -150,7 +153,10 @@ function UserListContent() {
           />
           <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          onClick={handleAddUser}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
           Adicionar Usuário
         </button>
       </div>

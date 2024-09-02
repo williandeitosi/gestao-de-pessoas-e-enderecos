@@ -4,21 +4,21 @@ import {
   MapPinIcon,
   UserPlusIcon,
   UsersIcon,
-} from '@heroicons/react/24/outline'
-import Link from 'next/link'
+} from "@heroicons/react/24/outline";
+import { Search } from "lucide-react";
+import Link from "next/link";
 
 const sidebarItemsTop = [
-  { name: 'Inicio', href: '/', icon: HomeIcon },
-  { name: 'Usuarios', href: '/users', icon: UsersIcon },
-  { name: 'Localizações', href: '/Locations', icon: MapPinIcon },
-  { name: 'Adicionar Usuario', href: '/add-user', icon: UserPlusIcon },
-]
+  { name: "Inicio", href: "/", icon: HomeIcon },
+  { name: "Buscar (CPF)", href: "/cpf-search", icon: Search },
+  { name: "Adicionar Usuario", href: "/create-user", icon: UserPlusIcon },
+];
 
 const sidebarItemBottom = {
-  name: 'Configurações',
-  href: '/config',
+  name: "Configurações",
+  href: "/config",
   icon: Cog6ToothIcon,
-}
+};
 
 export default function Sidebar() {
   return (
@@ -52,5 +52,5 @@ export default function Sidebar() {
         </ul>
       </div>
     </div>
-  )
+  );
 }

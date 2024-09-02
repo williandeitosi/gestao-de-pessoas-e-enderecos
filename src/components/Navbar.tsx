@@ -15,6 +15,7 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Avatar from "../assets/images/avatar.png";
+import { destroyCookie } from "nookies";
 
 export default function Navbar() {
   const [search, setSearch] = useState<string>("");
@@ -22,6 +23,15 @@ export default function Navbar() {
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+  };
+
+  const handleDeleteCookie = () => {
+    destroyCookie(null, "token");
+    window.location.href = "/login";
+  };
+
+  const handleProfileClick = () => {
+    window.location.href = "/user-config";
   };
 
   return (
@@ -78,6 +88,7 @@ export default function Navbar() {
                   <Menu.Item>
                     {({ active }) => (
                       <button
+                        onClick={handleProfileClick}
                         className={`${
                           active ? "bg-zinc-500 text-white" : "text-white"
                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
@@ -107,6 +118,7 @@ export default function Navbar() {
                   <Menu.Item>
                     {({ active }) => (
                       <button
+                        onClick={handleDeleteCookie}
                         className={`${
                           active ? "bg-zinc-500 text-white" : "text-white"
                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}

@@ -56,6 +56,7 @@ const LoginRegisterPage = () => {
         if (isLogin) {
           // Armazenar token JWT em um cookie
           document.cookie = `token=${data.token}; path=/; max-age=3600; SameSite=None; Secure`;
+          window.location.href = "/";
         } else {
           console.log("User registered successfully:", data);
         }
