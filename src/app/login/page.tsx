@@ -1,9 +1,26 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { checkUserLoggedIn } from "@/utils/checkUserLoggedIn";
 import LoginRegisterPage from "@/components/LoginRegisterPage";
 
 export default function Login() {
-    return (
-        <>
-        <LoginRegisterPage />
-        </>
-    )
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userLoggedIn = await checkUserLoggedIn();
+      if (userLoggedIn) {
+        router.push("/");
+      }
+    };
+
+    checkLoginStatus();
+  }, [router]);
+
+  return (
+    <>
+      <LoginRegisterPage />
+    </>
+  );
 }
