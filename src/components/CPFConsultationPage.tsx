@@ -1,276 +1,98 @@
-"use client";
 import React, { useState } from "react";
-import { Search } from "lucide-react";
 
-interface Address {
-  tipoEndereco: number;
-  logradouro: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  municipio: string;
-  siglaUf: string;
-  pais: string;
-  cep: string;
-}
+function Consultationpage() {
+  const [cpf, setCpf] = useState("");
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-interface Telephone {
-  ddi: string;
-  ddd: string;
-  numero: string;
-  tipo: number;
-}
-
-interface Nationality {
-  nacionalidade: number;
-  municipioNascimento: string;
-  paisNascimento: string;
-}
-
-interface PersonalData {
-  cnsDefinitivo: string;
-  cnsProvisorio: string[];
-  nome: string;
-  cpf: string;
-  dataNascimento: string;
-  sexo: string;
-  nomeMae: string;
-  nomePai: string;
-  grauQualidade: number;
-  ativo: boolean;
-  obito: boolean;
-  partoGemelar: boolean;
-  vip: boolean;
-  racaCor: string;
-  telefone: Telephone[];
-  nacionalidade: Nationality;
-  endereco: Address;
-}
-
-interface ConsultationResult {
-  pessoal: {
-    code: number;
-    paginado: boolean;
-    records: PersonalData[];
-  };
-  calendario: {
-    code: number;
-    paginado: boolean;
-    record: {
-      cns: string;
-      cpf: string;
-      indigena: boolean;
-      calendario: any[];
-      outrasImunizacoes: {
-        imunobiologicos: any[];
-      };
-      imunizacoesCampanha: {
-        imunobiologicos: any[];
-      };
-    };
-  };
-}
-
-interface CardProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const Card: React.FC<CardProps> = ({ title, children }) => (
-  <div className="bg-zinc-700 rounded-lg p-6 mb-6">
-    <h2 className="text-xl font-semibold mb-4">{title}</h2>
-    {children}
-  </div>
-);
-
-const CPFConsultationPage: React.FC = () => {
-  const [cpf, setCpf] = useState<string>("");
-  const [consultationResult, setConsultationResult] =
-    useState<ConsultationResult | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
+    setError("");
+    setUserData(null);
 
     try {
-      const response = await fetch(`Sua api de consulta aqui`, {
-        mode: "no-cors",
-      });
-
+      const response = await fetch(`sua api de busca`);
       if (!response.ok) {
-        throw new Error("Erro na consulta. Verifique o CPF e tente novamente.");
+        throw new Error("Failed to fetch user data");
       }
-
-      const data: ConsultationResult = await response.json();
-      setConsultationResult(data);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao buscar os dados. Tente novamente.");
+      const data = await response.json();
+      setUserData(data);
+    } catch (err) {
+      setError("Error fetching user data. Please try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const formatCPF = (value: string): string => {
-    const cpf = value.replace(/\D/g, "");
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-  };
-
-  const formatDate = (dateString: string): string => {
-    const [year, month, day] = dateString.split("-");
-    return `${day}/${month}/${year}`;
-  };
-
   return (
-    <div className="w-full h-full overflow-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Consulta</h1>
-
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Digite o CPF..."
-            className="w-full pl-10 pr-4 py-2 bg-zinc-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={cpf}
-            onChange={(e) => setCpf(formatCPF(e.target.value))}
-            maxLength={14}
-          />
-          <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
+    <div className="w-full max-w-md p-6 bg-zinc-700 rounded-lg shadow-xl">
+      <h1 className="text-2xl font-bold text-white mb-6">CPF Consultation</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Enter CPF"
+          value={cpf}
+          onChange={(e) => setCpf(e.target.value)}
+          className="w-full px-3 py-2 bg-zinc-600 text-white border border-zinc-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <button
           type="submit"
-          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          disabled={isLoading}
+          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition duration-300"
         >
-          {isLoading ? "Consultando..." : "Consultar CPF"}
+          {loading ? "Loading..." : "Consult"}
         </button>
       </form>
 
-      {consultationResult && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card title="Dados Pessoais">
-            <p>
-              <strong>Nome:</strong>{" "}
-              {consultationResult.pessoal.records[0].nome}
-            </p>
-            <p>
-              <strong>CPF:</strong>{" "}
-              {formatCPF(consultationResult.pessoal.records[0].cpf)}
-            </p>
-            <p>
-              <strong>Data de Nascimento:</strong>{" "}
-              {formatDate(consultationResult.pessoal.records[0].dataNascimento)}
-            </p>
-            <p>
-              <strong>Sexo:</strong>{" "}
-              {consultationResult.pessoal.records[0].sexo === "M"
-                ? "Masculino"
-                : "Feminino"}
-            </p>
-            <p>
-              <strong>Nome da Mãe:</strong>{" "}
-              {consultationResult.pessoal.records[0].nomeMae}
-            </p>
-            <p>
-              <strong>Nome do Pai:</strong>{" "}
-              {consultationResult.pessoal.records[0].nomePai}
-            </p>
-          </Card>
+      {error && <p className="text-red-500 mt-4">{error}</p>}
 
-          <Card title="Informações Adicionais">
-            <p>
-              <strong>CNS Definitivo:</strong>{" "}
-              {consultationResult.pessoal.records[0].cnsDefinitivo}
-            </p>
-            <p>
-              <strong>CNS Provisório:</strong>{" "}
-              {consultationResult.pessoal.records[0].cnsProvisorio.join(", ")}
-            </p>
-            <p>
-              <strong>Grau de Qualidade:</strong>{" "}
-              {consultationResult.pessoal.records[0].grauQualidade}
-            </p>
-            <p>
-              <strong>Ativo:</strong>{" "}
-              {consultationResult.pessoal.records[0].ativo ? "Sim" : "Não"}
-            </p>
-            <p>
-              <strong>Óbito:</strong>{" "}
-              {consultationResult.pessoal.records[0].obito ? "Sim" : "Não"}
-            </p>
-            <p>
-              <strong>Parto Gemelar:</strong>{" "}
-              {consultationResult.pessoal.records[0].partoGemelar
-                ? "Sim"
-                : "Não"}
-            </p>
-          </Card>
+      {userData && (
+        <div className="mt-6 p-4 bg-zinc-600 text-white rounded-lg">
+          <h2 className="text-xl font-bold mb-2">User Information</h2>
+          <p>
+            <strong>Name:</strong> {userData.pessoal.records[0].nome}
+          </p>
+          <p>
+            <strong>Birth Date:</strong>{" "}
+            {userData.pessoal.records[0].dataNascimento}
+          </p>
+          <p>
+            <strong>Mother's Name:</strong>{" "}
+            {userData.pessoal.records[0].nomeMae}
+          </p>
+          <p>
+            <strong>CNS:</strong> {userData.pessoal.records[0].cnsDefinitivo}
+          </p>
+        </div>
+      )}
 
-          <Card title="Contato e Nacionalidade">
-            <p>
-              <strong>Telefone:</strong> +
-              {consultationResult.pessoal.records[0].telefone[0].ddi} (
-              {consultationResult.pessoal.records[0].telefone[0].ddd}){" "}
-              {consultationResult.pessoal.records[0].telefone[0].numero}
-            </p>
-            <p>
-              <strong>Nacionalidade:</strong>{" "}
-              {consultationResult.pessoal.records[0].nacionalidade
-                .nacionalidade === 1
-                ? "Brasileiro"
-                : "Estrangeiro"}
-            </p>
-            <p>
-              <strong>Município de Nascimento:</strong>{" "}
-              {
-                consultationResult.pessoal.records[0].nacionalidade
-                  .municipioNascimento
-              }
-            </p>
-            <p>
-              <strong>País de Nascimento:</strong>{" "}
-              {consultationResult.pessoal.records[0].nacionalidade
-                .paisNascimento === "1"
-                ? "Brasil"
-                : "Outro"}
-            </p>
-          </Card>
-
-          <Card title="Endereço">
-            <p>
-              <strong>Logradouro:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.logradouro}
-            </p>
-            <p>
-              <strong>Número:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.numero}
-            </p>
-            <p>
-              <strong>Complemento:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.complemento}
-            </p>
-            <p>
-              <strong>Bairro:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.bairro}
-            </p>
-            <p>
-              <strong>Município:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.municipio}
-            </p>
-            <p>
-              <strong>UF:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.siglaUf}
-            </p>
-            <p>
-              <strong>CEP:</strong>{" "}
-              {consultationResult.pessoal.records[0].endereco.cep}
-            </p>
-          </Card>
+      {userData && userData.calendario && userData.calendario.record && (
+        <div className="mt-4 p-4 bg-zinc-600 text-white rounded-lg">
+          <h2 className="text-xl font-bold mb-2">Vaccination Information</h2>
+          {userData.calendario.record.imunizacoesCampanha.imunobiologicos.map(
+            (vaccine: any, index: number) => (
+              <div key={index} className="mb-2">
+                <p className="font-semibold">{vaccine.nome}</p>
+                {vaccine.imunizacoes.map((dose: any, doseIndex: number) => (
+                  <p key={doseIndex} className="ml-4">
+                    {dose.esquemaDose.tipoDoseDto.descricao}:{" "}
+                    {dose.dataAplicacao}
+                  </p>
+                ))}
+              </div>
+            )
+          )}
         </div>
       )}
     </div>
   );
-};
+}
 
-export default CPFConsultationPage;
+export default function CPFConsultationPage() {
+  return (
+    <div className="bg-zinc-800 row-start-2 row-end-12 col-start-3 col-span-full flex justify-center items-center font-bold text-xl rounded-lg">
+      <Consultationpage />
+    </div>
+  );
+}
