@@ -188,11 +188,11 @@ function CreateUser() {
     try {
       // Criar o usuário
       const userResponse = await fetch(`http://localhost:3000/clients`, {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({
           name: user.name,
           email: user.email,
@@ -213,6 +213,7 @@ function CreateUser() {
       // Criar os endereços
       for (const address of user.addresses) {
         const addressResponse = await fetch(`http://localhost:3000/addresses`, {
+          credentials: "include",
           method: "POST",
           headers: {
             "Content-Type": "application/json",

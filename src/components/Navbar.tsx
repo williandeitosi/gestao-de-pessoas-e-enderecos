@@ -52,16 +52,6 @@ export default function Navbar() {
           />
         </div>
         <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-full hover:bg-zinc-700"
-          >
-            {theme === "dark" ? (
-              <SunIcon className="h-7 w-7" />
-            ) : (
-              <MoonIcon className="h-7 w-7" />
-            )}
-          </button>
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <Menu.Button className="inline-flex w-full justify-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
