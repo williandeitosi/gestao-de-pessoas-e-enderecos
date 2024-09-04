@@ -126,13 +126,13 @@ function UserListContent() {
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          "Usuários Ativos (30 dias)",
+          "Quantidade de Consultas (24 hrs)",
           "Total de usuários",
           "Novos Usuários (10 dias)",
         ].map((title, index) => (
           <div
             key={index}
-            className="bg-zinc-700 p-4 rounded-lg border-[0.5px] border-opacity-20 border-yellow-300"
+            className="bg-zinc-700 p-4 rounded-lg border-[0.5px] border-opacity-20 border-blue-600"
           >
             <h2 className="text-lg font-semibold mb-2">{title}</h2>
             <p className="text-3xl font-bold">
