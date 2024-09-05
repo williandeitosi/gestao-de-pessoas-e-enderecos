@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { StaticImageData } from "next/image";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
+import { StaticImageData } from "next/image";
+import Success from "../assets/svgs/success.svg";
 
 interface Address {
   city: string;
@@ -56,6 +58,7 @@ const estadosBR = [
 ];
 
 function CreateUser() {
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [user, setUser] = useState<UserType>({
     name: "",
     email: "",
@@ -235,13 +238,73 @@ function CreateUser() {
       }
 
       console.log("User and addresses created successfully");
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("error creating user and addresses", error);
     }
   };
 
+  const closeModal = () => {
+    setShowSuccessModal(false);
+  };
+
+  const goToUsers = () => {
+    window.location.href = "/";
+  };
   return (
     <div className="w-full max-w-4xl p-6 bg-zinc-700 rounded-lg shadow-xl">
+      <AnimatePresence>
+        {showSuccessModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-800 p-8 rounded-lg shadow-lg w-full max-w-2xl"
+            >
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Cliente Criado com Sucesso!
+                </h2>
+                <div className="flex items-center justify-center mb-6">
+                  <Image
+                    src={Success}
+                    alt="Successfully Created Customer"
+                    width={300}
+                    height={300}
+                  />
+                </div>
+                <p className="text-zinc-400 mb-6">
+                  O cliente foi adicionado ao sistema com sucesso.
+                </p>
+                <div className="flex justify-between">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-1/2 bg-blue-600 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700 transition-colors"
+                    onClick={goToUsers}
+                  >
+                    Usuários
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-1/2 bg-zinc-700 text-white px-4 py-2 rounded ml-2 hover:bg-zinc-600 transition-colors"
+                    onClick={closeModal}
+                  >
+                    Fechar
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="flex items-center mb-6">
         <ArrowLeft className="h-6 w-6 text-blue-400 mr-2" />
         <h1 className="text-3xl font-bold text-white">Criar Novo Usuário</h1>
