@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Avatar from "../assets/images/avatar.png";
-import AvatarF from "../assets/images/image.png";
+import AvatarF from "../../public/images/f/7.png";
 import Image from "next/image";
 
 function ConsultationPage() {

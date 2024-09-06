@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, Eye, Edit, Trash2, ArrowLeft } from "lucide-react";
+import {
+  Search,
+  Eye,
+  Edit,
+  Trash2,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Avatar from "../assets/images/avatar.png";
 
 interface AddressType {
@@ -27,12 +35,78 @@ interface UserType {
   Address: AddressType[];
 }
 
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="mb-4">
+      <p className="text-gray-400">{label}</p>
+      <p className="font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function Pagination({
+  usersPerPage,
+  totalUsers,
+  paginate,
+  currentPage,
+}: {
+  usersPerPage: number;
+  totalUsers: number;
+  paginate: (pageNumber: number) => void;
+  currentPage: number;
+}) {
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(totalUsers / usersPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <nav className="flex justify-center mt-4">
+      <ul className="flex space-x-2">
+        <li>
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-zinc-700 rounded-md disabled:opacity-50"
+          >
+            <ChevronLeft className="h-7 w-5" />
+          </button>
+        </li>
+        {pageNumbers.map((number) => (
+          <li key={number}>
+            <button
+              onClick={() => paginate(number)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === number ? "bg-blue-600" : "bg-zinc-700"
+              }`}
+            >
+              {number}
+            </button>
+          </li>
+        ))}
+        <li>
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === Math.ceil(totalUsers / usersPerPage)}
+            className="px-3 py-1 bg-zinc-700 rounded-md disabled:opacity-50"
+          >
+            <ChevronRight className="h-7 w-5" />
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+
 function UserListContent() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [usersPerPage] = useState<number>(20);
 
   useEffect(() => {
     async function fetchClients() {
@@ -61,7 +135,16 @@ function UserListContent() {
           user.email.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
+    setCurrentPage(1);
   }, [searchTerm, users]);
+
+  // Isso pega os atuais.
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Proxima pagina
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -172,7 +255,7 @@ function UserListContent() {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((user) => (
+            {currentUsers.map((user) => (
               <tr key={user.id} className="border-t border-zinc-600">
                 <td className="p-3 flex items-center space-x-2">
                   <Image
@@ -218,6 +301,12 @@ function UserListContent() {
           </tbody>
         </table>
       </div>
+      <Pagination
+        usersPerPage={usersPerPage}
+        totalUsers={filteredUsers.length}
+        paginate={paginate}
+        currentPage={currentPage}
+      />
       {isModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-zinc-800 p-8 rounded-lg max-w-2xl w-full relative max-h-[90vh] flex flex-col">
@@ -299,15 +388,6 @@ function UserListContent() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="mb-4">
-      <p className="text-gray-400">{label}</p>
-      <p className="font-semibold">{value}</p>
     </div>
   );
 }
