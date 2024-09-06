@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchUserData, User, Sexo } from "../utils/fetchUserData";
+import { updateUserData } from "../utils/updateUserData"; // Importe a função de atualização
 
 interface AvatarCarouselProps {
   user: User;
@@ -94,8 +95,16 @@ const Component: React.FC = () => {
     return <p>Loading...</p>;
   }
 
-  const handleSelectAvatar = (newPfp: string) => {
-    setUser((prev) => (prev ? { ...prev, pfp: newPfp } : null));
+  const handleSelectAvatar = async (newPfp: string) => {
+    if (user) {
+      const updatedUser = { ...user, pfp: newPfp };
+      setUser(updatedUser);
+      try {
+        await updateUserData(user.id.toString(), updatedUser);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    }
   };
 
   const handleInputChange = (field: keyof User, value: string) => {
@@ -108,6 +117,16 @@ const Component: React.FC = () => {
 
   const toggleCarousel = () => {
     setShowCarousel((prev) => !prev);
+  };
+
+  const handleSaveChanges = async () => {
+    if (user) {
+      try {
+        await updateUserData(user.id.toString(), user);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    }
   };
 
   return (
@@ -155,7 +174,10 @@ const Component: React.FC = () => {
                 <p className="text-white flex-grow">{user.email}</p>
               )}
               <button
-                onClick={() => toggleEditing("email")}
+                onClick={() => {
+                  toggleEditing("email");
+                  if (isEditing.email) handleSaveChanges();
+                }}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.email ? "Salvar" : "Alterar"}
@@ -177,7 +199,10 @@ const Component: React.FC = () => {
                 <p className="text-white flex-grow">********</p>
               )}
               <button
-                onClick={() => toggleEditing("pass")}
+                onClick={() => {
+                  toggleEditing("pass");
+                  if (isEditing.pass) handleSaveChanges();
+                }}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.pass ? "Salvar" : "Alterar"}
@@ -191,9 +216,7 @@ const Component: React.FC = () => {
               {isEditing.sexo ? (
                 <select
                   value={user.sexo}
-                  onChange={(e) =>
-                    handleInputChange("sexo", e.target.value as Sexo)
-                  }
+                  onChange={(e) => handleInputChange("sexo", e.target.value)}
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 >
                   <option value="Masculino">Masculino</option>
@@ -203,14 +226,16 @@ const Component: React.FC = () => {
                 <p className="text-white flex-grow">{user.sexo}</p>
               )}
               <button
-                onClick={() => toggleEditing("sexo")}
+                onClick={() => {
+                  toggleEditing("sexo");
+                  if (isEditing.sexo) handleSaveChanges();
+                }}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.sexo ? "Salvar" : "Alterar"}
               </button>
             </div>
           </div>
-
           <div className="flex items-center justify-between">
             <label className="text-zinc-400 w-1/3">
               Data de Criação da Conta:
