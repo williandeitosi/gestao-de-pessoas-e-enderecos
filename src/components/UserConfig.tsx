@@ -36,6 +36,8 @@ export default function Component() {
     return <p>Loading...</p>;
   }
 
+  const AvatarPath = user.sexo === "Masculino" ? "images/m" : "images/f";
+
   return (
     <div className="bg-zinc-800 p-4 rounded-md row-start-2 row-end-12 col-start-3 col-span-full flex justify-center items-center">
       <div className="w-full max-w-screen-md space-y-4">
@@ -44,8 +46,8 @@ export default function Component() {
             <Camera className="w-6 h-6 text-blue-500" />
           </div>
           <div className="flex flex-col items-center">
-            <Image
-              src={Avatar}
+            <img
+              src={`/${AvatarPath}/${user.pfp}`}
               alt="Profile"
               className="w-32 h-32 bg-zinc-600 bg-opacity-10 rounded-full mb-4"
             />
