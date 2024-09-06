@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
@@ -16,10 +16,25 @@ import {
 } from "@heroicons/react/24/outline";
 import Avatar from "../assets/images/avatar.png";
 import { destroyCookie } from "nookies";
+import { fetchUserData, User, Sexo } from "../utils/fetchUserData";
 
 export default function Navbar() {
+  const [user, setUser] = useState<User | null>(null);
   const [search, setSearch] = useState<string>("");
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    async function getUserData() {
+      try {
+        const userData = await fetchUserData();
+        setUser(userData);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    getUserData();
+  }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -55,13 +70,23 @@ export default function Navbar() {
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <Menu.Button className="inline-flex w-full justify-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                <Image
-                  src={Avatar}
-                  alt="Avatar"
-                  className="rounded-full hover:bg-zinc-700 cursor-pointer"
-                  width={56}
-                  height={56}
-                />
+                {user ? (
+                  <img
+                    src={`/${user.sexo === "Masculino" ? "images/m" : "images/f"}/${user.pfp}`}
+                    alt="Avatar"
+                    className="rounded-full hover:bg-zinc-700 cursor-pointer"
+                    width={56}
+                    height={56}
+                  />
+                ) : (
+                  <Image
+                    src={Avatar}
+                    alt="Default Avatar"
+                    className="rounded-full hover:bg-zinc-700 cursor-pointer"
+                    width={56}
+                    height={56}
+                  />
+                )}
               </Menu.Button>
             </div>
             <Transition
@@ -73,7 +98,7 @@ export default function Navbar() {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 divide-opacity-10 rounded-md bg-zinc-800 bg-opacity-75  shadow-lg ring-1 ring-white ring-opacity-10 focus:outline-none">
+              <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 divide-opacity-10 rounded-md bg-zinc-800 bg-opacity-75 shadow-lg ring-1 ring-white ring-opacity-10 focus:outline-none">
                 <div className="px-1 py-1">
                   <Menu.Item>
                     {({ active }) => (
