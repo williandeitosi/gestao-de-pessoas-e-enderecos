@@ -1,19 +1,77 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Camera } from "lucide-react";
-import Avatar from "../assets/images/avatar.png";
-import Image from "next/image";
-import { fetchUserData, User, Sexo } from "../utils/fetchUserData"; // Importando o tipo Sexo
+import React, { useEffect, useState } from "react";
+import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchUserData, User, Sexo } from "../utils/fetchUserData";
 
-export default function Component() {
+interface AvatarCarouselProps {
+  user: User;
+  onSelectAvatar: (newPfp: string) => void;
+}
+
+const AvatarCarousel: React.FC<AvatarCarouselProps> = ({
+  user,
+  onSelectAvatar,
+}) => {
+  const [showCarousel, setShowCarousel] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const totalAvatars = user.sexo === "Masculino" ? 17 : 14;
+
+  const getAvatarPath = (index: number) =>
+    `/${user.sexo === "Masculino" ? "images/m" : "images/f"}/${index + 1}.png`;
+
+  const handlePrev = () => {
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + totalAvatars) % totalAvatars
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalAvatars);
+  };
+
+  const visibleAvatars = [
+    (currentIndex - 2 + totalAvatars) % totalAvatars,
+    (currentIndex - 1 + totalAvatars) % totalAvatars,
+    currentIndex,
+    (currentIndex + 1) % totalAvatars,
+    (currentIndex + 2) % totalAvatars,
+  ];
+
+  return (
+    <div className="flex items-center space-x-4">
+      <button onClick={handlePrev} className="p-2">
+        <ChevronLeft className="w-6 h-6 text-blue-500" />
+      </button>
+      <div className="flex space-x-4">
+        {visibleAvatars.map((index, i) => (
+          <img
+            key={index}
+            src={getAvatarPath(index)}
+            alt={`Avatar ${index + 1}`}
+            className={`w-16 h-16 rounded-full cursor-pointer transition-opacity duration-300 ${
+              i === 2
+                ? "opacity-100 scale-150"
+                : "opacity-50 hover:opacity-75 hover:scale-105"
+            }`}
+            onClick={() => onSelectAvatar(`${index + 1}.png`)}
+          />
+        ))}
+      </div>
+      <button onClick={handleNext} className="p-2">
+        <ChevronRight className="w-6 h-6 text-blue-500" />
+      </button>
+    </div>
+  );
+};
+
+const Component: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
-
   const [isEditing, setIsEditing] = useState({
     email: false,
     pass: false,
     sexo: false,
   });
+  const [showCarousel, setShowCarousel] = useState(false);
 
   useEffect(() => {
     async function getUserData() {
@@ -36,22 +94,44 @@ export default function Component() {
     return <p>Loading...</p>;
   }
 
-  const AvatarPath = user.sexo === "Masculino" ? "images/m" : "images/f";
+  const handleSelectAvatar = (newPfp: string) => {
+    setUser((prev) => (prev ? { ...prev, pfp: newPfp } : null));
+  };
+
+  const handleInputChange = (field: keyof User, value: string) => {
+    setUser((prev) => (prev ? { ...prev, [field]: value } : null));
+  };
+
+  const toggleEditing = (field: keyof typeof isEditing) => {
+    setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const toggleCarousel = () => {
+    setShowCarousel((prev) => !prev);
+  };
 
   return (
     <div className="bg-zinc-800 p-4 rounded-md row-start-2 row-end-12 col-start-3 col-span-full flex justify-center items-center">
       <div className="w-full max-w-screen-md space-y-4">
-        <div className="bg-zinc-700 bg-opacity-90 rounded-lg p-6 relative">
-          <div className="absolute top-4 right-4 bg-zinc-700 rounded-full p-2 cursor-pointer">
-            <Camera className="w-6 h-6 text-blue-500" />
-          </div>
-          <div className="flex flex-col items-center">
-            <img
-              src={`/${AvatarPath}/${user.pfp}`}
-              alt="Profile"
-              className="w-32 h-32 bg-zinc-600 bg-opacity-10 rounded-full mb-4"
-            />
+        <div className="bg-zinc-700 bg-opacity-90 rounded-lg p-6">
+          <div className="flex flex-col items-center space-y-4 relative">
+            <div className="relative">
+              <img
+                src={`/${user.sexo === "Masculino" ? "images/m" : "images/f"}/${user.pfp}`}
+                alt="Profile"
+                className="w-32 h-32 bg-zinc-600 bg-opacity-10 rounded-full"
+              />
+              <button
+                onClick={toggleCarousel}
+                className="absolute bottom-0 right-0 bg-zinc-600 rounded-full p-2 cursor-pointer"
+              >
+                <Camera className="w-6 h-6 text-blue-500" />
+              </button>
+            </div>
             <h2 className="text-xl font-bold text-blue-500">{user.name}</h2>
+            {showCarousel && (
+              <AvatarCarousel user={user} onSelectAvatar={handleSelectAvatar} />
+            )}
           </div>
         </div>
 
@@ -68,20 +148,14 @@ export default function Component() {
                 <input
                   type="email"
                   value={user.email}
-                  onChange={(e) =>
-                    setUser(
-                      (prev) => prev && { ...prev, email: e.target.value }
-                    )
-                  }
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 />
               ) : (
                 <p className="text-white flex-grow">{user.email}</p>
               )}
               <button
-                onClick={() =>
-                  setIsEditing((prev) => ({ ...prev, email: !prev.email }))
-                }
+                onClick={() => toggleEditing("email")}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.email ? "Salvar" : "Alterar"}
@@ -96,18 +170,14 @@ export default function Component() {
                 <input
                   type="password"
                   value={user.pass}
-                  onChange={(e) =>
-                    setUser((prev) => prev && { ...prev, pass: e.target.value })
-                  }
+                  onChange={(e) => handleInputChange("pass", e.target.value)}
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 />
               ) : (
                 <p className="text-white flex-grow">********</p>
               )}
               <button
-                onClick={() =>
-                  setIsEditing((prev) => ({ ...prev, pass: !prev.pass }))
-                }
+                onClick={() => toggleEditing("pass")}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.pass ? "Salvar" : "Alterar"}
@@ -122,10 +192,7 @@ export default function Component() {
                 <select
                   value={user.sexo}
                   onChange={(e) =>
-                    setUser(
-                      (prev) =>
-                        prev && { ...prev, sexo: e.target.value as Sexo }
-                    )
+                    handleInputChange("sexo", e.target.value as Sexo)
                   }
                   className="bg-zinc-600 text-white border border-zinc-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500 flex-grow"
                 >
@@ -136,9 +203,7 @@ export default function Component() {
                 <p className="text-white flex-grow">{user.sexo}</p>
               )}
               <button
-                onClick={() =>
-                  setIsEditing((prev) => ({ ...prev, sexo: !prev.sexo }))
-                }
+                onClick={() => toggleEditing("sexo")}
                 className="px-3 py-1 bg-zinc-600 text-white rounded hover:bg-zinc-500 focus:outline-none"
               >
                 {isEditing.sexo ? "Salvar" : "Alterar"}
@@ -158,4 +223,6 @@ export default function Component() {
       </div>
     </div>
   );
-}
+};
+
+export default Component;
