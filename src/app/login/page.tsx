@@ -11,7 +11,7 @@ export default function Login() {
     const checkLoginStatus = async () => {
       const userLoggedIn = await checkUserLoggedIn();
       if (userLoggedIn) {
-        router.push("/");
+        router.push("/main");
       }
     };
 
