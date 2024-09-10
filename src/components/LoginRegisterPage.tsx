@@ -59,7 +59,7 @@ const LoginRegisterPage = () => {
         console.log("Success:", data);
         if (isLogin) {
           document.cookie = `token=${data.token}; path=/; max-age=10800; SameSite=None; Secure`;
-          window.location.href = "/";
+          window.location.href = "/main";
         } else {
           setShowSuccessModal(true);
         }

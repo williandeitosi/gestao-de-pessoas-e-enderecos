@@ -9,7 +9,7 @@ import { Search } from "lucide-react";
 import Link from "next/link";
 
 const sidebarItemsTop = [
-  { name: "Inicio", href: "/", icon: HomeIcon },
+  { name: "Inicio", href: "/main", icon: HomeIcon },
   { name: "Buscar (CPF)", href: "/cpf-search", icon: Search },
   { name: "Adicionar Usuario", href: "/create-user", icon: UserPlusIcon },
 ];

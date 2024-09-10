@@ -7,7 +7,7 @@ import { TextGenerateEffect } from "./ui/TextGenerateEffect";
 
 const Main = () => {
   const StartSearch = () => {
-    window.location.href = "/";
+    window.location.href = "/main";
   };
 
   return (
