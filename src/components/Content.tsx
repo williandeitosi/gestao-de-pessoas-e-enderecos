@@ -10,8 +10,10 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  User,
 } from "lucide-react";
-import Avatar from "../assets/images/avatar.png";
+import AvatarM from "../../public/images/m/1.png";
+import AvatarF from "../../public/images/f/1.png";
 
 interface AddressType {
   id: number;
@@ -259,7 +261,7 @@ function UserListContent() {
               <tr key={user.id} className="border-t border-zinc-600">
                 <td className="p-3 flex items-center space-x-2">
                   <Image
-                    src={Avatar}
+                    src={user.sexo == "Masculino" ? AvatarM : AvatarF}
                     alt={user.name}
                     width={32}
                     height={32}
@@ -327,7 +329,7 @@ function UserListContent() {
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
                 <Image
-                  src={Avatar}
+                  src={selectedUser.sexo == "Masculino" ? AvatarM : AvatarF}
                   alt={selectedUser.name}
                   width={100}
                   height={100}
